@@ -107,6 +107,44 @@ func (gpio Gpio) Pin(nr int, flags ...PinFlags) (Pin, error) {
 }
 
 
+// set the name for the given pin
+func (gpio Gpio) SetPinName(nr int, name string) error {
+  var gpiopin gpio_pin
+  gpiopin.gp_pin = uint32(nr)
+
+  cname := unsafe.Pointer(C.CString(name))
+  defer C.free(cname)
+  gpiopin.gp_name = *(*[C.GPIOMAXNAME]C.char)(cname)
+
+  return ioctl(uintptr(gpio.fd), C.GPIOSETNAME, uintptr(unsafe.Pointer(&gpiopin)))
+}
+
+
+// set the name for the given pin
+func (pin Pin) SetName(name string) error {
+  return pin.gpio.SetPinName(int(pin.nr), name)
+}
+
+
+// get the pin name
+func (gpio Gpio) GetPinName(nr int) (string, error) {
+  var gpiopin gpio_pin
+  gpiopin.gp_pin = uint32(nr)
+
+  if err := ioctl(uintptr(gpio.fd), C.GPIOGETCONFIG, uintptr(unsafe.Pointer(&gpiopin))); err == nil {
+    return C.GoString(&gpiopin.gp_name[0]), nil
+  } else {
+    return "", err
+  }
+}
+
+
+// get the pin name
+func (pin Pin) GetName() (string, error) {
+  return pin.gpio.GetPinName(int(pin.nr))
+}
+
+
 // write the given value. 0 -> LOW, >= 1 -> HIGH
 func (pin Pin) Write(value int) error {
   var gpioreq gpio_req

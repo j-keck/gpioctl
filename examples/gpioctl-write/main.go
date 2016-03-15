@@ -3,6 +3,7 @@ package main
 import "strconv"
 import "os"
 import "fmt"
+import "github.com/j-keck/gpioctl"
 
 func main(){
   var err error
@@ -34,16 +35,16 @@ func main(){
   // action
   //
 
-  var gpio Gpio
-  if gpio, err = Open(); err != nil {
+  var gpio gpioctl.Gpio
+  if gpio, err = gpioctl.Open(); err != nil {
     fmt.Printf("unable to open gpio device - %s\n", err.Error())
     os.Exit(1)
   }
   defer gpio.Close()
 
 
-  var pin Pin
-  if pin, err = gpio.Pin(nr, GPIO_PIN_OUTPUT); err != nil {
+  var pin gpioctl.Pin
+  if pin, err = gpio.Pin(nr, gpioctl.GPIO_PIN_OUTPUT); err != nil {
     fmt.Printf("unable to open gpio device - %s\n", err.Error())
     os.Exit(1)
   }

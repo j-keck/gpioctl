@@ -1,1 +1,5 @@
-gpio-freebsd
+*.swp
+
+# ignore all executables under examples
+examples/
+!examples/**/*.go

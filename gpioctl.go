@@ -1,4 +1,4 @@
-package main
+package gpioctl
 
 
 // #include <sys/cdefs.h>

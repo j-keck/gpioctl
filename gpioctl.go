@@ -79,6 +79,16 @@ func (pin Pin) Toggle() error {
   return ioctl(uintptr(pin.gpio.fd), C.GPIOTOGGLE, uintptr(unsafe.Pointer(&gpioreq)))
 }
 
+func (pin Pin) Read() (int, error) {
+  var gpioreq gpio_req
+  gpioreq.gp_pin = pin.nr
+  if err := ioctl(uintptr(pin.gpio.fd), C.GPIOGET, uintptr(unsafe.Pointer(&gpioreq))); err != nil {
+    return 0, err
+  } else {
+    return int(gpioreq.gp_value), nil
+  }
+}
+
 type gpio_pin struct {
   gp_pin   uint32;
   gp_name  [64]C.char;

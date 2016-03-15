@@ -52,14 +52,7 @@ func (gpio Gpio) Close() error {
 
 
 func (gpio Gpio) Pin(nr int, flags ...PinFlags) (Pin, error) {
-  type gpio_pin struct {
-    gp_pin   uint32;
-    gp_name  [64]C.char;
-    gp_caps  uint32;
-    gp_flags uint32;
-  }
-
-  var gpiopin gpio_pin
+ var gpiopin gpio_pin
   gpiopin.gp_pin = uint32(nr)
   for _, f := range flags {
     gpiopin.gp_flags |= uint32(f)
@@ -74,15 +67,29 @@ func (gpio Gpio) Pin(nr int, flags ...PinFlags) (Pin, error) {
 
 
 func (pin Pin) Write(value int) error {
-  type gpio_req struct {
-    gp_pin   uint32;
-    gp_value uint32;
-  }
-
   var gpioreq gpio_req
   gpioreq.gp_pin = pin.nr
   gpioreq.gp_value = uint32(value)
   return ioctl(uintptr(pin.gpio.fd), C.GPIOSET, uintptr(unsafe.Pointer(&gpioreq)))
+}
+
+func (pin Pin) Toggle() error {
+  var gpioreq gpio_req
+  gpioreq.gp_pin = pin.nr
+  return ioctl(uintptr(pin.gpio.fd), C.GPIOTOGGLE, uintptr(unsafe.Pointer(&gpioreq)))
+}
+
+type gpio_pin struct {
+  gp_pin   uint32;
+  gp_name  [64]C.char;
+  gp_caps  uint32;
+  gp_flags uint32;
+}
+
+
+type gpio_req struct {
+  gp_pin   uint32;
+  gp_value uint32;
 }
 
 

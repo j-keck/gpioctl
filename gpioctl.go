@@ -1,8 +1,26 @@
-// Package gpioctl to manage GPIO pins under bsd
+// Package gpioctl to manage GPIO pins under freebsd
 //
 //
-// gpioctl use the 'ioctl()' system call to manage
-// the gpio pins.
+// * it's uses the 'ioctl()' system call to manage the gpio pins
+// * tested on 'FreeBSD rpi2 11.0-CURRENT FreeBSD 11.0-CURRENT #0 r296485'
+//   - doesn't work under FreeBSD 10 - missing ioctl to name a pin (GPIOSETNAME)
+//   - 'GPIOSETNAME' was implemented in r279761 (git sha: 04b6b93)
+// 
+//
+//
+// API:
+//
+//   gpioctl.Open      : open the GPIO bus
+//   gpioctl.Close     : close the GPIO bus
+//   gpioctl.Pin       : configure a GPIO pin
+//   gpioctl.SetPinName: set the name for the given pin
+//   gpioctl.GetPinName: get the pin name
+//   <pin>.SetName     : set the name for the given pin
+//   <pin>.GetName     : get the pin name
+//   <pin>.Write       : write the given value. 0 -> LOW, >= 1 -> HIGH
+//   <pin>.Toggle      : toggle the current pin state
+//   <pin>.Read        : read the current pin state
+//       
 //
 //
 // EXAMPLE:
